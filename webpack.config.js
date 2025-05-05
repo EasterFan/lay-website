@@ -4,17 +4,18 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   mode: 'development',
-  entry: './src/index.js',
+  entry: {
+    popup: '../extension/index.html',
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
-    publicPath: '/lay-website/',
   },
   module: {
     rules: [
       {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        test: /\.html$/,
+        use: ['html-loader'],
       },
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
@@ -24,8 +25,20 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/index.html',
+      template: '../extension/index.html',
       filename: 'index.html',
+      chunks: ['popup'],
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: '../extension',
+          to: 'assets',
+          globOptions: {
+            ignore: ['**/manifest.json', '**/index.html'],
+          },
+        },
+      ],
     }),
   ],
   devServer: {
